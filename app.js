@@ -20,13 +20,17 @@ http.listen(9999, function () {
 
 
 // Listen for incoming connections from clients
-io.on('connection', function (socket) {
+/*
+Here a handler for new incoming connections is registered. Whenever a new client connects, this function is called and the socket of the new client is passed as an argument.
+*/
+io.sockets.on('connection', function (socket) {
 
   // Start listening for mouse move events
   socket.on('mousemove', function (data) {
 
     // This line sends the event (broadcasts it)
     // to everyone except the originating client.
-    socket.broadcast.emit('moving', data);
+    //socket.broadcast.emit('moving', data);
+    io.sockets.emit('moving', data);
   });
 });
