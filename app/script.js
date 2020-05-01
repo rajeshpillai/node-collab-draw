@@ -15,6 +15,9 @@ $(function () {
     ctx = canvas[0].getContext('2d'),
     instructions = $('#instructions');
 
+  var offsetLeft = canvas[0].offsetLeft,
+      offsetTop = canvas[0].offsetTop;
+
   // Generate an unique ID
   var id = Math.round($.now() * Math.random());
   console.log(id);
@@ -59,8 +62,15 @@ $(function () {
   canvas.on('mousedown', function (e) {
     e.preventDefault();
     drawing = true;
-    prev.x = e.pageX;
-    prev.y = e.pageY;
+
+    x = e.pageX;
+    y = e.pageY;
+
+    x -= offsetLeft;
+    y -= offsetTop;
+
+    prev.x = x;
+    prev.y = y;
 
     // Hide the instructions
     instructions.fadeOut();
@@ -73,25 +83,31 @@ $(function () {
   var lastEmit = $.now();
 
   doc.on('mousemove', function (e) {
-    if ($.now() - lastEmit > 30) {
+      let x = e.pageX;
+      let y = e.pageY;
+
+      x -= offsetLeft;
+      y -= offsetTop;
+
+    //if ($.now() - lastEmit > 30) {
       socket.emit('mousemove', {
-        'x': e.pageX,
-        'y': e.pageY,
+        'x': x,
+        'y': y,
         'drawing': drawing,
         'id': id
       });
       lastEmit = $.now();
-    }
+    //}
 
     // Draw a line for the current user's movement, as it is
     // not received in the socket.on('moving') event above
 
     if (drawing) {
 
-      drawLine(prev.x, prev.y, e.pageX, e.pageY);
+      drawLine(prev.x, prev.y, x, y);
 
-      prev.x = e.pageX;
-      prev.y = e.pageY;
+      prev.x = x;
+      prev.y = y;
     }
   });
 
